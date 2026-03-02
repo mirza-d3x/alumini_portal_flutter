@@ -46,10 +46,19 @@ class ApiService {
   }
 
   // ─── HTTP wrapper methods ─────────────────────────────────────────────────────
-  Future<http.Response> _get(Uri uri, {Map<String, String>? headers}) async {
+  Future<http.Response> _get(
+    Uri uri, {
+    Map<String, String>? headers,
+    bool isRetry = false,
+  }) async {
     _log('GET', uri);
     try {
       final res = await http.get(uri, headers: headers ?? await _getHeaders());
+      if (res.statusCode == 401 && !isRetry) {
+        if (await _refreshToken()) {
+          return _get(uri, headers: headers, isRetry: true);
+        }
+      }
       _log('GET', uri, statusCode: res.statusCode, responseBody: res.body);
       return res;
     } catch (e) {
@@ -62,6 +71,7 @@ class ApiService {
     Uri uri, {
     Map<String, String>? headers,
     String? body,
+    bool isRetry = false,
   }) async {
     _log('POST', uri, requestBody: body);
     try {
@@ -70,6 +80,11 @@ class ApiService {
         headers: headers ?? await _getHeaders(),
         body: body,
       );
+      if (res.statusCode == 401 && !isRetry) {
+        if (await _refreshToken()) {
+          return _post(uri, headers: headers, body: body, isRetry: true);
+        }
+      }
       _log('POST', uri, statusCode: res.statusCode, responseBody: res.body);
       return res;
     } catch (e) {
@@ -78,19 +93,51 @@ class ApiService {
     }
   }
 
-  Future<http.Response> _delete(Uri uri, {Map<String, String>? headers}) async {
+  Future<http.Response> _delete(
+    Uri uri, {
+    Map<String, String>? headers,
+    bool isRetry = false,
+  }) async {
     _log('DELETE', uri);
     try {
       final res = await http.delete(
         uri,
         headers: headers ?? await _getHeaders(),
       );
+      if (res.statusCode == 401 && !isRetry) {
+        if (await _refreshToken()) {
+          return _delete(uri, headers: headers, isRetry: true);
+        }
+      }
       _log('DELETE', uri, statusCode: res.statusCode, responseBody: res.body);
       return res;
     } catch (e) {
       _log('DELETE ERROR', uri, responseBody: e.toString());
       return http.Response('{"error": "Connection failed"}', 500);
     }
+  }
+
+  Future<bool> _refreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final refreshToken = prefs.getString('refresh_token');
+    if (refreshToken == null) return false;
+
+    try {
+      final res = await http.post(
+        Uri.parse('$baseUrl/token/refresh/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'refresh': refreshToken}),
+      );
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        await prefs.setString('access_token', data['access']);
+        return true;
+      }
+    } catch (_) {}
+    // If refresh fails, clear tokens (user needs to login again)
+    await prefs.remove('access_token');
+    await prefs.remove('refresh_token');
+    return false;
   }
 
   // ─── Auth ────────────────────────────────────────────────────────────────────
