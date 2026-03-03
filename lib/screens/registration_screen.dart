@@ -16,6 +16,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -47,6 +48,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void dispose() {
     _usernameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
@@ -172,6 +174,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final result = await _apiService.registerWithFile(
       username: _usernameController.text.trim(),
       email: _emailController.text.trim(),
+      phoneNumber: _phoneController.text.trim(),
       password: _passwordController.text,
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
@@ -463,6 +466,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             return 'Username must be at least 3 characters';
                           if (_usernameAvailable == false)
                             return 'This username is already taken';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Phone Number
+                      TextFormField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          labelText: 'Mobile Number *',
+                          prefixIcon: const Icon(Icons.phone_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          helperText:
+                              'Mobile number and mail ID are required for the verification process. Please use a valid number.',
+                          helperMaxLines: 2,
+                        ),
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty)
+                            return 'Mobile Number is required';
+                          if (v.trim().length < 8)
+                            return 'Enter a valid mobile number';
                           return null;
                         },
                       ),

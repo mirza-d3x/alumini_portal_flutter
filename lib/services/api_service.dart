@@ -4,7 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8000/api';
+  // Read the API URL from build arguments, fallback to localhost for development.
+  // When building for deployment, run:
+  // flutter build web --dart-define=API_URL=https://your-render-url.onrender.com/api
+  static const String baseUrl = String.fromEnvironment(
+    'API_URL',
+    defaultValue: 'http://127.0.0.1:8000/api',
+  );
 
   // ─── Logging helper ─────────────────────────────────────────────────────────
   void _log(
@@ -215,6 +221,7 @@ class ApiService {
   Future<Map<String, dynamic>> registerWithFile({
     required String username,
     required String email,
+    required String phoneNumber,
     required String password,
     required String firstName,
     required String lastName,
@@ -233,6 +240,7 @@ class ApiService {
     );
     request.fields['username'] = username;
     request.fields['email'] = email;
+    request.fields['phone_number'] = phoneNumber;
     request.fields['password'] = password;
     request.fields['first_name'] = firstName;
     request.fields['last_name'] = lastName;
