@@ -335,7 +335,7 @@ class _JobsScreenState extends State<JobsScreen> {
                                         ),
                                         const SizedBox(width: 16),
                                         Text(
-                                          'Posted by ${job['posted_by_name'] ?? job['posted_by_username'] ?? ''}',
+                                          'Posted by ${job['posted_by_name']?.toString().isNotEmpty == true ? job['posted_by_name'] : job['posted_by_username'] ?? ''}',
                                           style: const TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
@@ -403,7 +403,7 @@ class _JobsScreenState extends State<JobsScreen> {
                   ),
                   _detailRow(
                     Icons.person_outline,
-                    'Posted by ${job['posted_by_name'] ?? job['posted_by_username'] ?? ''}',
+                    'Posted by ${job['posted_by_name']?.toString().isNotEmpty == true ? job['posted_by_name'] : job['posted_by_username'] ?? ''}',
                   ),
                   const Divider(height: 24),
                   const Text(

@@ -43,14 +43,20 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
 
     setState(() {
       _filteredProfiles = _profiles.where((p) {
-        final name = '${p['first_name'] ?? ''} ${p['last_name'] ?? ''}'
-            .toLowerCase();
-        final username = (p['username'] ?? '').toLowerCase();
+        final pUser = p['user'] is Map ? p['user'] : null;
+        final fName = p['first_name'] ?? pUser?['first_name'] ?? '';
+        final lName = p['last_name'] ?? pUser?['last_name'] ?? '';
+        final name = '$fName $lName'.toLowerCase();
+
+        final uName = p['username'] ?? pUser?['username'] ?? '';
+        final usernameStr = uName.toString().toLowerCase();
         final d = (p['department'] ?? '').toLowerCase();
         final y = (p['graduation_year'] ?? '').toString().toLowerCase();
 
         final matchesName =
-            query.isEmpty || name.contains(query) || username.contains(query);
+            query.isEmpty ||
+            name.contains(query) ||
+            usernameStr.contains(query);
         final matchesDept = dept.isEmpty || d.contains(dept);
         final matchesYear = year.isEmpty || y.contains(year);
 
@@ -174,12 +180,27 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           itemCount: _filteredProfiles.length,
                           itemBuilder: (context, index) {
                             final profile = _filteredProfiles[index];
-                            final name =
-                                '${profile['first_name'] ?? ''} ${profile['last_name'] ?? ''}'
-                                    .trim();
+                            final pUser = profile['user'] is Map
+                                ? profile['user']
+                                : null;
+                            final fName =
+                                profile['first_name'] ??
+                                pUser?['first_name'] ??
+                                '';
+                            final lName =
+                                profile['last_name'] ??
+                                pUser?['last_name'] ??
+                                '';
+                            final name = '$fName $lName'.trim();
+                            final uName =
+                                profile['username'] ?? pUser?['username'];
+
                             final displayName = name.isNotEmpty
                                 ? name
-                                : profile['username'] ?? 'Alumni';
+                                : (uName != null &&
+                                          uName.toString().trim().isNotEmpty
+                                      ? uName
+                                      : 'Alumni');
 
                             return Card(
                               elevation: 2,
@@ -211,7 +232,10 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                   null
                                               ? null
                                               : Text(
-                                                  displayName[0].toUpperCase(),
+                                                  displayName.isNotEmpty
+                                                      ? displayName[0]
+                                                            .toUpperCase()
+                                                      : 'A',
                                                   style: TextStyle(
                                                     color: Theme.of(
                                                       context,
@@ -237,7 +261,12 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                               Text(
-                                                '@${profile['username'] ?? ''}',
+                                                uName != null &&
+                                                        uName
+                                                            .toString()
+                                                            .isNotEmpty
+                                                    ? '@$uName'
+                                                    : '',
                                                 style: const TextStyle(
                                                   color: Colors.grey,
                                                   fontSize: 12,
