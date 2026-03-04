@@ -26,11 +26,17 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
 
   void _fetchProfiles() async {
     setState(() => _isLoading = true);
-    final profiles = await _apiService.getProfiles();
+    final allProfiles = await _apiService.getProfiles();
+
+    // Filter to show ONLY Alumni, not students or faculty, since this page is specifically "Alumnis".
+    final alumniProfiles = allProfiles
+        .where((p) => p['role'] == 'ALUMNI')
+        .toList();
+
     if (mounted) {
       setState(() {
-        _profiles = profiles;
-        _filteredProfiles = profiles;
+        _profiles = alumniProfiles;
+        _filteredProfiles = alumniProfiles;
         _isLoading = false;
       });
     }
