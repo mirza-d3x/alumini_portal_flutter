@@ -384,9 +384,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       final isBlocked = u['is_active'] == false;
                       final isPending = u['is_approved'] != true;
                       final role = u['role'] ?? 'STUDENT';
+                      final profile = u['profile'] ?? {};
+                      final String? _extractedIdCard =
+                          profile['id_card'] ??
+                          profile['id_card_url'] ??
+                          u['id_card_url'];
+                      final String? _extractedProfilePic =
+                          profile['profile_picture_url'] ??
+                          u['profile_picture_url'];
+
                       final hasIdCard =
-                          u['id_card_url'] != null &&
-                          u['id_card_url'].isNotEmpty;
+                          _extractedIdCard != null &&
+                          _extractedIdCard.isNotEmpty;
                       final name =
                           '${u['first_name'] ?? ''} ${u['last_name'] ?? ''}'
                               .trim();
@@ -418,13 +427,13 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                     backgroundColor: theme.colorScheme.primary
                                         .withOpacity(0.15),
                                     backgroundImage:
-                                        u['profile_picture_url'] != null &&
-                                            u['profile_picture_url'].isNotEmpty
-                                        ? NetworkImage(u['profile_picture_url'])
+                                        _extractedProfilePic != null &&
+                                            _extractedProfilePic.isNotEmpty
+                                        ? NetworkImage(_extractedProfilePic)
                                         : null,
                                     child:
-                                        u['profile_picture_url'] != null &&
-                                            u['profile_picture_url'].isNotEmpty
+                                        _extractedProfilePic != null &&
+                                            _extractedProfilePic.isNotEmpty
                                         ? null
                                         : Text(
                                             (name.isNotEmpty
@@ -515,7 +524,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                       (role == 'ALUMNI' || role == 'STUDENT'))
                                     OutlinedButton.icon(
                                       onPressed: () =>
-                                          _viewIdCard(u['id_card_url'], u),
+                                          _viewIdCard(_extractedIdCard, u),
                                       icon: Icon(
                                         hasIdCard
                                             ? Icons.badge
