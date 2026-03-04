@@ -271,8 +271,13 @@ class _JobsScreenState extends State<JobsScreen> {
                                               ),
                                               const SizedBox(height: 4),
                                               Text(
-                                                job['company'] ??
-                                                    'Company not specified',
+                                                (job['company'] != null &&
+                                                        job['company']
+                                                            .toString()
+                                                            .trim()
+                                                            .isNotEmpty)
+                                                    ? job['company']
+                                                    : 'Company not specified',
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   fontSize: 15,
@@ -298,7 +303,10 @@ class _JobsScreenState extends State<JobsScreen> {
                                     Row(
                                       children: [
                                         if (job['location'] != null &&
-                                            job['location'].isNotEmpty) ...[
+                                            job['location']
+                                                .toString()
+                                                .trim()
+                                                .isNotEmpty) ...[
                                           const Icon(
                                             Icons.location_on_outlined,
                                             size: 16,
@@ -390,10 +398,17 @@ class _JobsScreenState extends State<JobsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _detailRow(Icons.business, job['company'] ?? 'N/A'),
+                  _detailRow(
+                    Icons.business,
+                    (job['company'] != null &&
+                            job['company'].toString().trim().isNotEmpty)
+                        ? job['company']
+                        : 'N/A',
+                  ),
                   _detailRow(
                     Icons.location_on_outlined,
-                    job['location'] != null && job['location'].isNotEmpty
+                    job['location'] != null &&
+                            job['location'].toString().trim().isNotEmpty
                         ? job['location']
                         : 'N/A',
                   ),

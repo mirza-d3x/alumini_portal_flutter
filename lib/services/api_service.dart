@@ -233,6 +233,7 @@ class ApiService {
     String? regNo,
     String? department,
     String? graduationYear,
+    String? currentCompany,
   }) async {
     final request = http.MultipartRequest(
       'POST',
@@ -250,6 +251,8 @@ class ApiService {
       request.fields['department'] = department;
     if (graduationYear != null && graduationYear.isNotEmpty)
       request.fields['graduation_year'] = graduationYear;
+    if (currentCompany != null && currentCompany.isNotEmpty)
+      request.fields['current_company'] = currentCompany;
 
     if (idCardBytes != null && idCardFilename != null) {
       request.files.add(
@@ -416,34 +419,17 @@ class ApiService {
     required String jobType,
     required String description,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
-    final request = http.MultipartRequest('POST', Uri.parse('$baseUrl/jobs/'));
-    if (token != null) request.headers['Authorization'] = 'Bearer $token';
-    request.fields['title'] = title;
-    request.fields['company'] = companyName;
-    if (location != null) request.fields['location'] = location;
-    request.fields['job_type'] = jobType;
-    request.fields['description'] = description;
-
-    _log(
-      'POST (multipart)',
+    final res = await _post(
       Uri.parse('$baseUrl/jobs/'),
-      requestBody: 'title=$title',
+      body: jsonEncode({
+        'title': title,
+        'company': companyName,
+        if (location != null && location.isNotEmpty) 'location': location,
+        'job_type': jobType,
+        'description': description,
+      }),
     );
-    try {
-      final streamed = await request.send();
-      final res = await http.Response.fromStream(streamed);
-      _log(
-        'POST (multipart response)',
-        Uri.parse('$baseUrl/jobs/'),
-        statusCode: res.statusCode,
-        responseBody: res.body,
-      );
-      return res.statusCode == 201;
-    } catch (_) {
-      return false;
-    }
+    return res.statusCode == 201;
   }
 
   Future<List<dynamic>> getJobApplications() async {
