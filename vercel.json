@@ -1,5 +1,8 @@
 {
     "version": 2,
+    "env": {
+        "API_URL": "https://alumni-backend-9qt9.onrender.com"
+    },
     "builds": [
         {
             "src": "build.sh",
