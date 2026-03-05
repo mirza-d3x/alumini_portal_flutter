@@ -6,10 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiService {
   // Read the API URL from build arguments, fallback to localhost for development.
   // When building for deployment, run:
-  // flutter build web --dart-define=API_URL=https://your-render-url.onrender.com/api
+  // flutter build web --dart-define=API_URL=https://alumni-backend-9qt9.onrender.com/api
   static const String baseUrl = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'http://127.0.0.1:8000/api',
+    defaultValue: 'https://alumni-backend-9qt9.onrender.com/api',
   );
 
   // ─── Logging helper ─────────────────────────────────────────────────────────
