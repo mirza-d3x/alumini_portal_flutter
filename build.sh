@@ -1,20 +1,23 @@
 #!/bin/bash
-# Exit on error
+# Exit immediately on error
 set -e
 
-# ---- Install Flutter (stable) ----
-# Shallow clone to keep build fast
+echo "=== Installing Flutter (stable) ==="
+# Shallow clone for speed
 git clone https://github.com/flutter/flutter.git -b stable --depth 1
 export PATH="$PATH:$(pwd)/flutter/bin"
 
-# Verify installation (optional, helps debugging)
+echo "=== Flutter version ==="
 flutter --version
 
-# Enable web support
+echo "=== Enabling web support ==="
 flutter config --enable-web
 
-# Get Dart/Flutter dependencies
+echo "=== Getting dependencies ==="
 flutter pub get
 
-# Build the web app, using the API_URL environment variable set in Vercel
-flutter build web --release --dart-define=API_URL=$API_URL
+echo "=== Building Flutter web app ==="
+# Pass the backend API URL baked into the build
+flutter build web --release --dart-define=API_URL=${API_URL:-https://alumni-backend-9qt9.onrender.com}
+
+echo "=== Build complete! Output in build/web ==="

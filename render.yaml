@@ -4,5 +4,14 @@ services:
     env: static
     buildCommand: bash build.sh
     staticPublishPath: build/web
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
-      API_URL: https://alumni-backend-9qt9.onrender.com
+      - key: API_URL
+        value: https://alumni-backend-9qt9.onrender.com
