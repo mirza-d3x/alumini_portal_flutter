@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: alumni-frontend
+    env: static
+    buildCommand: bash build.sh
+    staticPublishPath: build/web
+    envVars:
+      API_URL: https://alumni-backend-9qt9.onrender.com
