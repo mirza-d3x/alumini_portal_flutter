@@ -18,6 +18,6 @@ flutter pub get
 
 echo "=== Building Flutter web app ==="
 # Pass the backend API URL baked into the build
-flutter build web --release --dart-define=API_URL=${API_URL:-https://alumni-backend-9qt9.onrender.com}
+flutter build web --release --dart-define=API_URL=${API_URL:-https://alumni-backend-9qt9.onrender.com/api}
 
 echo "=== Build complete! Output in build/web ==="

@@ -14,4 +14,4 @@ services:
         destination: /index.html
     envVars:
       - key: API_URL
-        value: https://alumni-backend-9qt9.onrender.com
+        value: https://alumni-backend-9qt9.onrender.com/api
